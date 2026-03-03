@@ -1,14 +1,29 @@
 export default async function handler(req, res) {
-    // CORS Headers strictly set
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-    );
+    // --- EXACT DOMAIN PRIVACY ---
+    const allowedOrigin = "https://ftgm-sfx-api.vercel.app"; 
+    const requestOrigin = req.headers.origin;
 
-    // Handle OPTIONS request for CORS preflight
+    // Check if the request is coming from your specific Vercel domain
+    if (requestOrigin === allowedOrigin) {
+        res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+    } else {
+        // Agar koi aur website use karegi to block ho jayegi
+        return res.status(403).json({ 
+            error: "Access Denied: FTGM Private API",
+            credits: {
+                tiktok: "https://www.tiktok.com/@r.faisalali",
+                youtube: "https://youtube.com/@ftgmtech",
+                contact: "https://wa.me/+923104882921?text=Hi+FTGM",
+                whatsapp_channel: "https://whatsapp.com/channel/0029VbAzazM2kNFp4p1qIZ2P",
+                telegram: "https://t.me/FTGMHACKS"
+            }
+        });
+    }
+
+    // Standard CORS Headers
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
@@ -23,10 +38,9 @@ export default async function handler(req, res) {
         const response = await fetch(freesoundUrl);
         const data = await response.json();
 
-        // Sirf wahi credits jo aapne diye hain
         const finalResponse = {
             credits: {
-                tiktok: "https://www.tiktok.com/@r.faisalali",
+                tiktok: "https://ftgmtools.pages.dev",
                 youtube: "https://youtube.com/@ftgmtech",
                 contact: "https://wa.me/+923104882921?text=Hi+FTGM",
                 whatsapp_channel: "https://whatsapp.com/channel/0029VbAzazM2kNFp4p1qIZ2P",
@@ -37,6 +51,6 @@ export default async function handler(req, res) {
 
         res.status(200).json(finalResponse);
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data" });
+        res.status(500).json({ error: "API Fetch Error" });
     }
-}
+    }
