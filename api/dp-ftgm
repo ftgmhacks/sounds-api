@@ -1,0 +1,44 @@
+export default async function handler(req, res) {
+    // 1. Enable CORS for all origins
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
+
+    // Handle preflight OPTIONS request
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
+    // 2. Define the target WhatsApp number and API
+    const number = "923104882921";
+    const targetUrl = `https://unavatar.io/whatsapp/${number}`;
+
+    // 3. Define the custom credits
+    const credits = {
+        dev: "Rana Faisal Ali",
+        brand: "FTGM",
+        visit: "https://ftgmtools.pages.dev",
+        contact: "923104882921 For more"
+    };
+
+    try {
+        // 4. Handle JSON response if requested, otherwise return image data
+        // If the user wants the direct image URL and metadata
+        return res.status(200).json({
+            status: "success",
+            profile_picture: targetUrl,
+            credits: credits
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            error: "Failed to fetch profile data",
+            credits: credits
+        });
+    }
+}
